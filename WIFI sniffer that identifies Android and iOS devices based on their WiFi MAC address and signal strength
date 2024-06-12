@@ -1,0 +1,87 @@
+Replit Bounty Solution: 
+How to build a WIFI sniffer that identifies Android and iOS devices based on their WiFi MAC address and signal strength:
+
+
+To build a WIFI sniffer that identifies Android and iOS devices based on their WiFi MAC address and signal strength, you can use an ESP8266 device with the following specifications:
+1. ESP8266-based development board (e.g., NodeMCU)
+2. Battery and charging circuit
+3. Buttons and LEDs
+4. Speaker (optional)
+5. WiFi antenna (if required)
+Here's a high-level overview of the solution:
+1. **Deep sleep mode:** Implement deep sleep mode using the ESP8266's sleep functions. Set a timer to wake up the device periodically to check for MQTT messages.
+2. **WiFi connection:** Implement logic to connect to WiFi upon waking up and before going into deep sleep mode.
+3. **MQTT communication:** Implement MQTT client functionality to receive and publish messages.
+4. **Display message, play sound, and light LED:** Implement functions to handle MQTT messages with specific payloads to perform these actions.
+5. **Promiscuous WiFi mode:** Implement promiscuous WiFi mode using ESP8266's WiFi library to monitor nearby WiFi devices and their signal strength.
+6. **MAC address detection:** Implement logic to detect specific MAC addresses based on the signal strength threshold.
+7. **Publish MAC address:** Once a target MAC address is detected, publish the MAC address to the server via MQTT.
+
+
+Here's a rough outline of the code structure:
+```cpp
+#include <ESP8266WiFi.h>
+#include <PubSubClient.h>
+// WiFi and MQTT configuration
+const char* ssid = "your_wifi_ssid";
+const char* password = "your_wifi_password";
+const char* mqtt_server = "your_mqtt_server";
+const int mqtt_port = 1883;
+const char* mqtt_user = "your_mqtt_user";
+const char* mqtt_pass = "your_mqtt_password";
+// WiFi and MQTT client instances
+WiFiClient espClient;
+PubSubClient client(espClient);
+// Promiscuous WiFi mode configuration
+const int promiscuous_threshold = -50; // dBm
+const int promiscuous_channel = 1;
+// Function prototypes
+void connect_wifi();
+void connect_mqtt();
+void on_message(char* topic, byte* payload, unsigned int length);
+void promiscuous_mode();
+void handle_mqtt_message(char* payload);
+void setup() {
+ // Initialize serial communication
+ Serial.begin(115200);
+// Connect to WiFi
+ connect_wifi();
+// Initialize MQTT client
+ client.setServer(mqtt_server, mqtt_port);
+ client.setCallback(on_message);
+// Connect to MQTT server
+ connect_mqtt();
+}
+void loop() {
+ // Handle MQTT messages
+ if (!client.connected()) {
+ connect_mqtt();
+ }
+ client.loop();
+// Check for MQTT messages to switch to promiscuous mode
+ if (message_type == "search") {
+ promiscuous_mode();
+ }
+}
+void connect_wifi() {
+ // Implement WiFi connection logic here
+}
+void connect_mqtt() {
+ // Implement MQTT connection logic here
+}
+void on_message(char* topic, byte* payload, unsigned int length) {
+ // Implement MQTT message handling logic here
+}
+void promiscuous_mode() {
+ // Implement promiscuous WiFi mode logic here
+}
+void handle_mqtt_message(char* payload) {
+ // Implement message display, sound, and LED logic here
+}
+```
+
+This outline provides a starting point for your project. You'll need to fill in the details for each function based on your specific hardware and requirements.
+As for the questions you've mentioned:
+1. Switching to promiscuous mode and back should take a few milliseconds. However, the actual time may depend on the specific ESP8266 board and firmware.
+2. Obtaining a reliable signal value for a 5 cm distance might be challenging due to environmental factors. You can experiment with different threshold values to minimize false positives and negatives.
+3. Android and iOS devices randomize the MAC address for each access point. However, if they are connected to the same access point with the same identifiers, they should have the same randomized MAC address.
